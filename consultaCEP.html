@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Consulta de CEP</title>
+        <script src="jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <form method="post" id="cepForm">
+            <input type="number" name="cep" id="cep">
+            <input type="submit">
+        </form>
+        <br>
+        <div id="content">
+
+        </div>
+
+        <script type="text/javascript">
+            $('#cepForm').submit(function(event){
+                event.preventDefault();
+
+                if(!$('#cep').val()){
+                    $('#content').css('display', 'inline');
+                    $('#content').html('O campo de consulta deve ser preenchido!');
+                }
+                else if($('#cep').val().length != 8){
+                    $('#content').css('display', 'inline');
+                    $('#content').html('O CEP fornecido possui mais ou menos do que 8 dígitos!');
+                }
+                else{
+                    fetch('http://viacep.com.br/ws/' + $('#cep').val() + '/json').then(response => {
+                        return response.json();
+                    }).then(data => {
+                        $('#content').css('display', 'inline');
+                        $('#content').html(
+                            '<p>CEP: '+data['cep']+'</p>' +
+                            '<br><p>Logradouro/Nome: '+data['logradouro']+' - '+data['complemento']+'</p>' +
+                            '<br><p>Bairro/Distrito: '+data['bairro']+'</p>' +
+                            '<br><p>Localidade/UF: '+data['localidade']+' - '+data['uf']+'</p>'
+                        );
+                    }).catch(err => {
+
+                    })
+                }
+            });
+        </script>
+    </body>
+</html>
