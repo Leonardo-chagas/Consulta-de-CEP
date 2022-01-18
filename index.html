@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Consulta de CEP</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <!--Header da página-->
+        <div id="header">
+            <h1 id="headerText">Consulta de CEP</h1>
+        </div>
+        <!--Área onde o usuário pode digitar o CEP que deseja consultar-->
+        <div>
+        <form method="post" id="cepForm">
+            <input type="number" name="cep" id="cep" placeholder="Digite o CEP desejado">
+            <span id="error"></span>
+            <br><br>
+            <input type="submit" value="Buscar" id="buscar">
+        </form>
+        <br>
+        </div>
+        <!--Área onde as informações do CEP consultado serão apresentadas-->
+        <div id="content">
+
+        </div>
+
+        <script type="text/javascript">
+            $('#cepForm').submit(function(event){
+                event.preventDefault();
+
+                if(!$('#cep').val()){
+                    $('#error').css('display', 'inline');
+                    $('#error').html('O campo de consulta deve ser preenchido!');
+                }
+                else if($('#cep').val().length != 8){
+                    $('#error').css('display', 'inline');
+                    $('#error').html('O CEP fornecido possui mais ou menos do que 8 dígitos!');
+                }
+                else{
+                    fetch('http://viacep.com.br/ws/' + $('#cep').val() + '/json').then(response => {
+                        return response.json();
+                    }).then(data => {
+                        $('#content').css('display', 'inline');
+                        $('#content').html(
+                            '<div id="dados">' +
+                            '<p class="info">CEP: '+data['cep']+'</p>' +
+                            '<br><p class="info">Logradouro/Nome: '+data['logradouro']+' - '+data['complemento']+'</p>' +
+                            '<br><p class="info">Bairro/Distrito: '+data['bairro']+'</p>' +
+                            '<br><p class="info">Localidade/UF: '+data['localidade']+' - '+data['uf']+'</p>' +
+                            '</div>'
+                        );
+                    }).catch(err => {
+
+                    })
+                }
+            });
+        </script>
+    </body>
+</html>
